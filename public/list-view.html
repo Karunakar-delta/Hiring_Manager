@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidate List View</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+      }
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+      #searchBar {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      #sortSelect {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .table-container {
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #f8f8f8;
+        font-weight: bold;
+        color: #333;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      tbody tr:hover {
+        background-color: #f5f5f5;
+      }
+      @media (max-width: 768px) {
+        .navbar {
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+      }
+
+      .navbar {
+        position: inline-block;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #2c3e50;
+        padding: 15px 0;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.2rem;
+      }
+      .navbar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        margin: 0 5px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+      .navbar a:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        font-size: 14px; /* Adjusted for overall text */
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 20px; /* Adjusted for header */
+      }
+
+      #searchBar {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px; /* Adjusted for search bar text */
+      }
+
+      #sortSelect {
+        margin-bottom: 20px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px; /* Adjusted for select box text */
+      }
+
+      .table-container {
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 8px 12px; /* Reduced padding for smaller font size */
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px; /* Adjusted font size for table content */
+      }
+
+      th {
+        background-color: #f8f8f8;
+        font-weight: bold;
+        color: #333;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      tbody tr:hover {
+        background-color: #f5f5f5;
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+      }
+
+      .navbar {
+        position: inline-block;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #2c3e50;
+        padding: 10px 0; /* Adjusted padding for smaller font size */
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.2rem;
+      }
+
+      .navbar a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 12px; /* Adjusted padding for smaller font size */
+        margin: 0 5px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 14px; /* Adjusted font size for navbar links */
+      }
+
+      .navbar a:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="stats.html" id="homeLink">Home</a>
+      <a href="form.html" id="formLink">Candidate Form</a>
+      <a href="candidates.html" id="detailsLink">Candidate Details</a>
+      <a href="stats.html" id="statsLink">Statistics</a>
+      <a href="updatePositions.html" id="updatePositionsLink"
+        >Update Positions</a
+      >
+      <a href="positions.html" id="positionsLink">Open Positions</a>
+      <a href="masterCandidates.html" id="masterCandidatesLink"
+        >Master Candidate Details</a
+      >
+      <a href="userActivity.html" id="userActivity">User Activity</a>
+      <a href="#" id="logoutLink">Logout</a>
+    </div>
+    <div class="container">
+      <h1 id="listTitle">Candidate List</h1>
+      <input type="text" id="searchBar" placeholder="Search candidates..." />
+      <select id="sortSelect">
+        <option value="dateApplied">Sort by Date Applied</option>
+        <option value="applicantName">Sort by Name</option>
+      </select>
+      <div class="table-container">
+        <table id="candidateTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Date Applied</th>
+              <th>Position</th>
+              <th>Stage</th>
+              <th id="dateOfJoiningHeader" style="display: none">
+                Date of Joining
+              </th>
+              <th>Notes</th>
+              <!-- New column header -->
+            </tr>
+          </thead>
+          <tbody id="candidateList"></tbody>
+        </table>
+      </div>
+    </div>
+    <script src="list-view-logic.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="socket.js"></script>
+  </body>
+</html>
