@@ -1,24 +1,23 @@
 {
   "version": 2,
-  "name": "Store-Api",
   "builds": [
     {
       "src": "app.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/app.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(auth|candidates|users|form|updatePositions)(.*)",
-      "dest": "/app.js"
-    },
-    {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
+      "src": "/api/(.*)",
+      "dest": "routes/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/app.js"
+      "dest": "public/$1"
     }
   ]
 }
