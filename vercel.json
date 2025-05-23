@@ -1,12 +1,18 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     {
-      "src": "/auth",
+      "src": "api/auth",
       "dest": "routes/auth.js"
     },
     {
-      "src": "/candidates",
+      "src": "api/candidates",
       "dest": "routes/candidates.js"
     },
     {
