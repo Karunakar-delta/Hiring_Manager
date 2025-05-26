@@ -1,6 +1,36 @@
 {
   "version": 2,
-   "routes": [
-    { "src": "/(.*)", "dest": "/" }
+  "name": "store-api",
+  "builds": [
+    {
+      "src": "app.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/auth/.*",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/candidates/.*",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/users",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/form",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/updatePositions",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/app.js"
+    }
   ]
 }
