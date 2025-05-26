@@ -2,16 +2,8 @@
   "version": 2,
   "routes": [
     {
-      "src": "api/auth",
-      "dest": "routes/auth.js"
-    },
-    {
-      "src": "api/candidates",
-      "dest": "routes/candidates.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ]
 }
