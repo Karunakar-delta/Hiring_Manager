@@ -24,9 +24,23 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .then((data) => {
       data.map((item) => (count += item.openPositions));
-      console.log("Fetched data hiiii:", count);
       // updatePositions(data);
       document.querySelector(".activePostionscount").textContent = count;
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/candidates", {
+   headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    },
+  })
+    .then((res) => res.json())
+    .then((candidates) => {
+      populateAboutToJoinTable(candidates);
+    })
+    .catch((err) => {
+      console.error("Error fetching candidates:", err);
     });
 });
 
@@ -52,6 +66,48 @@ function fetchDashboardData() {
     .catch((error) => {
       console.error("Error fetching dashboard data:", error);
       alert("Failed to load dashboard data. Please try again later.");
+    });
+}
+
+function populateAboutToJoinTable(candidates) {
+  const tbody = document.querySelector(".aboutToJoinTable tbody");
+  tbody.innerHTML = ""; // Clear previous rows
+
+  const today = new Date();
+
+  candidates
+    .filter(candidate => candidate?.stage?.toLowerCase() === "about to join")
+    .forEach(candidate => {
+      const tr = document.createElement("tr");
+
+      // Applicant Name
+      const nameCell = document.createElement("td");
+      nameCell.textContent = candidate?.applicantName?.trim() || "N/A";
+
+      // Notice Period (Handle if missing or not a number)
+      const noticePeriod = parseInt(candidate?.noticePeriod) || 0;
+      const noticeCell = document.createElement("td");
+      noticeCell.textContent = isNaN(noticePeriod) ? "N/A" : noticePeriod;
+
+      // Days Left Calculation (if interviewDate is valid)
+      let daysLeftText = "N/A";
+      if (candidate?.dateOfOffer) {
+        const joinDate = new Date(candidate.dateOfOffer);
+        if (!isNaN(joinDate.getTime())) {
+          const timeDiff = joinDate - today;
+          const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          daysLeftText = daysLeft >= 0 ? daysLeft : "Passed";
+        }
+      }
+
+      const daysLeftCell = document.createElement("td");
+      daysLeftCell.textContent = daysLeftText;
+
+      // Append to row
+      tr.appendChild(nameCell);
+      tr.appendChild(noticeCell);
+      tr.appendChild(daysLeftCell);
+      tbody.appendChild(tr);
     });
 }
 

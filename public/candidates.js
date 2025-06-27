@@ -403,7 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // Create table row with sticky columns
           row.innerHTML = 
               `${profileOwnerCell}
-              <td class="sticky-col second-col"><i class="far fa-edit action-icon" style="color: blue;" onclick="updateCandidate(${candidate.applicantId})"></i></td>
+              <td class="sticky-col second-col"><i class="far fa-edit action-icon" style="color: blue;cursor: pointer;" onclick="updateCandidate(${candidate.applicantId})"></i></td>
               <td class="sticky-col sticky-col-3"><input type="text" id="applicantName-${candidate.applicantId}" value="${candidate.applicantName}"></td>
               <td><input type="tel" id="applicantPhone-${candidate.applicantId}" value="${candidate.applicantPhone}"></td>
               <td><input type="email" id="applicantEmail-${candidate.applicantId}" value="${candidate.applicantEmail}"></td>
@@ -477,6 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <option value="Buffer List" ${candidate.stage === "Buffer List" ? "selected" : ""}>Buffer List</option>
                       <option value="Exceeding Limit" ${candidate.stage === "Exceeding Limit" ? "selected" : ""}>Exceeding Limit</option>
                       <option value="Rejected" ${candidate.stage === "Rejected" ? "selected" : ""}>Rejected</option>
+                       <option value="About To Join" ${candidate.stage === "About To Join" ? "selected" : ""}>About To Join</option>
                       <option value="Declined" ${candidate.stage === "Declined" ? "selected" : ""}>Declined</option>
                   </select>
               </td>

@@ -61,6 +61,11 @@
         margin-bottom: 20px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+      
+      .aboutToJoinTable {
+        display: inline-table;
+      }
+
 
       h1 {
         margin-bottom: 2rem;
@@ -191,6 +196,19 @@
           <p id="declinedCount">0</p>
         </div>
       </div>
+      <div class="chart-container" id="aboutToJoinTableContainer">
+  <h2>Candidates About to Join (Days Left)</h2>
+  <table class="aboutToJoinTable">
+    <thead>
+      <tr>
+        <th>Applicant Name</th>
+        <th>Notice Period (Days)</th>
+        <th>Days Left to Join</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
     </div>
 
     <script src="stats.js"></script>

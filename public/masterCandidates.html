@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
     <title>Master Candidate Details</title>
@@ -24,9 +25,9 @@
 
       /* Make the table container take up all available space */
       .view {
-        margin: auto;
         width: 100%; /* Changed to 100% to take full width */
       }
+
 
       .wrapper {
         position: relative;
@@ -46,7 +47,7 @@
         width: 150px; /* Increased width */
         min-width: 150px; /* Increased min-width */
         max-width: 150px; /* Increased max-width */
-        left: 0px;
+        left: -1px;
       }
 
       .second-col {
@@ -56,11 +57,22 @@
         left: 120px; /* Updated left value */
       }
 
+      .third-col {
+        width: 150px; /* Increased width */
+        min-width: 150px; /* Increased min-width */
+        max-width: 150px; /* Increased max-width */
+        left: 240px; /* Updated left value */
+      }
+
       th.first-col {
         background-color: #f2f2f2; /* Change this to the desired background color */
       }
 
       th.second-col {
+        background-color: #f2f2f2; /* Change this to the desired background color */
+      }
+
+      th.third-col {
         background-color: #f2f2f2; /* Change this to the desired background color */
       }
 
@@ -77,13 +89,13 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 20px; /* Height of the scrollbar */
+        height: 20px; 
         background-color: rgba(
           242,
           242,
           242,
           0.9
-        ); /* Semi-transparent background */
+        ); 
         overflow-x: auto;
         overflow-y: hidden;
         z-index: 1000;
@@ -121,9 +133,14 @@
         gap: 5px;
       }
 
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
       .export-button {
         margin-top: 10px;
-        align-self: flex-end;
         width: 80px;
         height: 40px;
         padding: 5px;
@@ -138,6 +155,80 @@
       .export-button:hover {
         background-color: #007bff;
       }
+
+       .import-button {
+        margin-top: 10px;
+        width: 80px;
+        height: 40px;
+        padding: 5px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .import-button:hover {
+        background-color: #007bff;
+      }
+
+      .logoutLink {
+        display: none
+      }
+
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        position: relative;
+        text-align: center;
+      }
+
+      .close-button {
+        color: #aaa;
+        font-size: 24px;
+        font-weight: bold;
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        cursor: pointer;
+      }
+
+      .close-button:hover {
+        color: #000;
+      }
+
+      .form-group label {
+  display: block; 
+  margin-bottom: 5px;
+  font-size: 12px; /* Adjust the label font size here */
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%; 
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px; /* Decrease the font size of input/select/textarea fields */
+}
+
     </style>
   </head>
   <body>
@@ -157,7 +248,7 @@
       <a href="assignapplicants.html" id="assignApplicantLink"
         >Assign Applicant</a
       >
-      <a href="#" id="logoutLink" style="display: none">Logout</a>
+      <a href="#" id="logoutLink">Logout</a>
     </div>
     <div class="forms-container">
       <div id="usernameDisplay"></div>
@@ -185,7 +276,7 @@
             <!-- Options will be populated dynamically -->
           </select>
         </div>
-        <div class="search-container">
+        <div class="filter-container">
           <input
             type="text"
             id="searchInput"
@@ -193,15 +284,21 @@
           />
         </div>
       </div>
+      <div class="button-container">
+      <!-- Import Button -->
+      <button class="import-button" id="importButton">Import</button>
       <!-- Export Button -->
       <button class="export-button" id="exportButton">Export</button>
+      </div>
+      
       <div class="view">
-        <div class="wrapper">
+        
           <table id="table">
             <thead>
               <tr>
-                <th class="sticky-col first-col">Profile Owner</th>
-                <th class="sticky-col second-col">Name</th>
+                <th class="sticky-col first-col">Actions</th>
+                <th class="sticky-col second-col">Profile Owner</th>
+                <th class="sticky-col third-col">Name</th>
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Current Company</th>
@@ -230,64 +327,264 @@
               <!-- Candidates will be populated here -->
             </tbody>
           </table>
-        </div>
+        
       </div>
     </div>
 
     <div class="floating-scrollbar">
       <div class="scrollbar-spacer"></div>
     </div>
+    
+    <!-- Import Modal -->
+<div id="importModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button" id="closeModal">&times;</span>
+    <h2>Select Excel File to Import</h2>
+    <input type="file" placeholder="Select Excel File" id="importExcel" accept=".xlsx, .xls" />
+    <button id="confirmImport">Upload</button>
+  </div>
+</div>
+
+<div id="updateCandidateModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Update Candidate Details</h2>
+        <h3 id="applicantNameDisplay"></h3> <!-- Applicant Name Display -->
+        <form id="candidateForm">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="profileOwner">Profile Owner:</label>
+              <input type="text" id="profileOwner" name="profileOwner" readonly />
+            </div>
+            
+            <div class="form-group">
+              <label for="applicantName">Name:</label>
+              <input type="text" id="applicantName" name="applicantName">
+            </div>
+            
+            <div class="form-group">
+              <label for="applicantPhone">Phone:</label>
+              <input type="text" id="applicantPhone" name="applicantPhone">
+            </div>
+            
+            <div class="form-group">
+              <label for="applicantEmail">Email:</label>
+              <input type="email" id="applicantEmail" name="applicantEmail">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="currentCompany">Current Company:</label>
+              <input type="text" id="currentCompany" name="currentCompany">
+            </div>
+    
+            <div class="form-group">
+              <label for="candidateWorkLocation">Work Location:</label>
+              <input type="text" id="candidateWorkLocation" name="candidateWorkLocation">
+            </div>
+    
+            <div class="form-group">
+              <label for="nativeLocation">Native Location:</label>
+              <input type="text" id="nativeLocation" name="nativeLocation">
+            </div>
+    
+            <div class="form-group">
+              <label for="qualification">Qualification:</label>
+              <input type="text" id="qualification" name="qualification">
+            </div>
+          </div>
+    
+          <div class="form-row">
+            <div class="form-group">
+              <label for="experience">Experience:</label>
+              <input type="text" id="experience" name="experience">
+            </div>
+    
+            <div class="form-group">
+              <label for="skills">Skills:</label>
+              <input type="text" id="skills" name="skills">
+            </div>
+    
+            <div class="form-group">
+              <label for="noticePeriod">Notice Period:</label>
+              <input type="text" id="noticePeriod" name="noticePeriod">
+            </div>
+    
+            <div class="form-group">
+              <label for="currentctc">Current CTC:</label>
+              <input type="text" id="currentctc" name="currentctc">
+            </div>
+          </div>
+    
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expectedctc">Expected CTC:</label>
+              <input type="text" id="expectedctc" name="expectedctc">
+            </div>
+    
+            <div class="form-group">
+              <label for="band">Band:</label>
+              <select id="band" name="band" required>
+                <option value="L0">L0</option>
+                <option value="L1">L1</option>
+                <option value="L2">L2</option>
+                <option value="L3">L3</option>
+                <option value="L4">L4</option>
+                <option value="CostPlus">CostPlus</option>
+                <option value="Non-Billable">Non-Billable</option>
+                <option value="Bench">Bench</option>
+              </select>
+            </div>
+    
+            <div class="form-group">
+              <label for="dateApplied">Date Applied:</label>
+              <input type="date" id="dateApplied" name="dateApplied">
+            </div>
+    
+            <div class="form-group">
+              <label for="positionTitle" class="required">Position Title:</label>
+              <select id="positionTitle" name="positionTitle" required>
+                <option value="">Select Position Title</option>
+              </select>
+            </div>
+          </div>
+    
+          <div class="form-row">
+            <div class="form-group">
+              <label for="positionId">Position ID:</label>
+              <select id="positionId" name="positionId" required>
+                <option value="">Select Position ID</option>
+              </select>
+            </div>
+    
+            <div class="form-group">
+              <label for="status">Status:</label>
+              <select id="status" name="status" required>
+                <option value="OPEN">OPEN</option>
+                <option value="CLOSED">CLOSED</option>
+              </select>
+            </div>
+    
+            <div class="form-group">
+              <label for="stage">Stage:</label>
+              <select id="stage" name="stage">
+                <option value="App. Recd.">App. Recd.</option>
+                <option value="Not Answering">Not Answering</option>
+                <option value="Phone Screen">Phone Screen</option>
+                <option value="L1">L1</option>
+                <option value="L2_Internal">L2_Internal</option>
+                <option value="Yet to share">Yet to share</option>
+                <option value="Shared with client">Shared with client</option>
+                <option value="L1_Client">L1_Client</option>
+                <option value="L2_Client">L2_Client</option>
+                <option value="Final Discussion">Final Discussion</option>
+                <option value="HOLD">HOLD</option>
+                <option value="Buffer List">Buffer List</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Declined">Declined</option>
+              </select>
+            </div>
+    
+            <div class="form-group">
+              <label for="interviewer">Interviewer:</label>
+              <select id="interviewer" name="interviewer">
+                <option value="None">None</option>
+                <option value="Interviewer 1">Interviewer 1</option>
+                <option value="Interviewer 2">Interviewer 2</option>
+              </select>
+            </div>
+          </div>
+    
+          <div class="form-row">
+            <div class="form-group">
+              <label for="interviewDate">Interview Date:</label>
+              <input type="date" id="interviewDate" name="interviewDate">
+            </div>
+    
+            <div class="form-group">
+              <label for="dateOfOffer">Date of Offer:</label>
+              <input type="date" id="dateOfOffer" name="dateOfOffer">
+            </div>
+    
+            <div class="form-group">
+              <label for="reasonNotExtending">Reason for Not Extending Offer:</label>
+              <select id="reasonNotExtending" name="reasonNotExtending">
+                <option value="">Select Value</option>
+                <option value="Salary Negotiation">Salary Negotiation</option>
+                <option value="Relocation Issues">Relocation Issues</option>
+              </select>
+            </div>
+    
+            <div class="form-group">
+              <label for="notes">Notes:</label>
+              <textarea id="notes" name="notes"></textarea>
+            </div>
+          </div>
+    
+          <div>
+            <button type="button" id="saveButton">Save</button>
+            <!-- <button type="button" id="cancelButton">Cancel</button> -->
+            <!-- <button class="close-button">Cancel</button> -->
+          </div>
+    
+        </form>
+      </div>
+    </div>
+
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const tableWrapper = document.querySelector(".table-wrapper");
-        const floatingScrollbar = document.querySelector(".floating-scrollbar");
-        const scrollbarSpacer = document.querySelector(".scrollbar-spacer");
-        const table = document.getElementById("candidateTable");
+  document.addEventListener("DOMContentLoaded", function () {
+    const tableWrapper = document.querySelector(".table-wrapper");
+    const floatingScrollbar = document.querySelector(".floating-scrollbar");
+    const scrollbarSpacer = document.querySelector(".scrollbar-spacer");
+    const table = document.getElementById("candidateTable");
 
-        // Function to update the spacer width and scrollbar
-        function updateScrollbarAndSpacer() {
-          // Calculate the total width of all columns
-          const totalWidth = Array.from(table.rows[0].cells).reduce(
-            (sum, cell) => sum + cell.offsetWidth,
-            0
-          );
+    if (!tableWrapper || !floatingScrollbar || !scrollbarSpacer || !table) {
+      return;
+    }
 
-          // Set the width of the spacer to match the total table width
-          scrollbarSpacer.style.width = `${totalWidth}px`;
+    // Function to update scrollbar widths and sync sizes
+    function updateScrollbarAndSpacer() {
+      const headerRow = table.rows[0];
+      if (!headerRow) return;
 
-          // Set the width of the floating scrollbar container to match the table wrapper width
-          floatingScrollbar.style.width = `${tableWrapper.clientWidth}px`;
-        }
+      const totalWidth = Array.from(headerRow.cells).reduce(
+        (sum, cell) => sum + cell.offsetWidth,
+        0
+      );
 
-        // Synchronize the table scroll with the floating scrollbar
-        floatingScrollbar.addEventListener("scroll", function () {
-          tableWrapper.scrollLeft = floatingScrollbar.scrollLeft;
-        });
+      scrollbarSpacer.style.width = `${totalWidth}px`;
+      floatingScrollbar.style.width = `${tableWrapper.clientWidth}px`;
+    }
 
-        // Synchronize the floating scrollbar with the table scroll
-        tableWrapper.addEventListener("scroll", function () {
-          floatingScrollbar.scrollLeft = tableWrapper.scrollLeft;
-        });
+    // Sync scrolling from floating scrollbar to table
+    floatingScrollbar.addEventListener("scroll", () => {
+      tableWrapper.scrollLeft = floatingScrollbar.scrollLeft;
+    });
 
-        // Update the scrollbar and spacer when the window resizes
-        window.addEventListener("resize", updateScrollbarAndSpacer);
+    // Sync scrolling from table to floating scrollbar
+    tableWrapper.addEventListener("scroll", () => {
+      floatingScrollbar.scrollLeft = tableWrapper.scrollLeft;
 
-        // Initial setup
-        updateScrollbarAndSpacer();
-
-        // Adjust table header on vertical scroll
-        tableWrapper.addEventListener("scroll", function () {
-          const headers = table.querySelectorAll("th");
-          headers.forEach((header) => {
-            header.style.transform = `translateY(${tableWrapper.scrollTop}px)`;
-          });
-        });
-
-        // Observe the table for changes (e.g., data loading)
-        const observer = new MutationObserver(updateScrollbarAndSpacer);
-        observer.observe(table, { childList: true, subtree: true });
+      // Adjust table headers on vertical scroll
+      const headers = table.querySelectorAll("th");
+      headers.forEach((header) => {
+        header.style.transform = `translateY(${tableWrapper.scrollTop}px)`;
       });
-    </script>
+    });
+
+    // Update scrollbar and spacer on window resize
+    window.addEventListener("resize", updateScrollbarAndSpacer);
+
+    // Observe DOM mutations to update widths dynamically
+    const observer = new MutationObserver(updateScrollbarAndSpacer);
+    observer.observe(table, { childList: true, subtree: true });
+
+    // Initial setup
+    updateScrollbarAndSpacer();
+  });
+</script>
     <script src="userInfo.js"></script>
     <script src="dashboard.js"></script>
     <script src="masterCandidates.js"></script>

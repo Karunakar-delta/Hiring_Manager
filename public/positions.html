@@ -251,7 +251,8 @@
  
         <button class="update-btn" data-position-id="${position.positionId}" style="display:none;">Done</button>
         <button class="share-btn" data-position-id="${position.positionId}">Share</button>
-      </td>
+        <button class="delete-btn" data-position-id="${position.positionId}" style="background-color: red; color: white;">Delete</button>
+        </td>
     `;
  
               positionsList.appendChild(row);
@@ -401,7 +402,35 @@ document.querySelector(".popup-close").addEventListener("click", function () {
                 }
               }, 3000);
             });
- 
+            // Add event listeners for delete buttons
+            document.querySelectorAll(".delete-btn").forEach((btn) => {
+              btn.addEventListener("click", function () {
+                const positionId = this.getAttribute("data-position-id");
+
+                if (confirm(`Are you sure you want to delete Position ID ${positionId}?`)) {
+                  fetch("/deleteposition", {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ positionId }),
+                  })
+                    .then((res) => {
+                      if (res.ok) {
+                        alert("Position deleted successfully.");
+                        this.closest("tr").remove(); // Remove the row from the table
+                      } else {
+                        alert("Failed to delete position.");
+                      }
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                      alert("Error deleting position.");
+                    });
+                }
+              });
+            });
             // Existing functionality for edit, update, and share buttons (omitted for brevity)
           })
           .catch((err) => {

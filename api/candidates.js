@@ -128,8 +128,7 @@ router.post(
 // Fetch all candidates for the profile owner or all candidates if the user is an admin
 router.get("/", authenticateToken, (req, res) => {
   const profileOwner = req.user.username;
-  const { isgetAll, profileOwnerFilter } = req.query;
-
+  const { isgetAll } = req.query;
   const userRole = req.user.role;
 
   let sql =

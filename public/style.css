@@ -61,6 +61,17 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+#userTable {
+  display: inline-table;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+ #aboutToJoinTable {
+        display: inline-table;
+      }
+
 h2 {
   text-align: center;
   margin-bottom: 20px;
@@ -347,9 +358,14 @@ body {
 /* Scrollable container */
 table {
   display: block;
-  overflow-x: auto;
+  overflow-x:auto;
+  overflow-y: auto;
   white-space: nowrap;
 }
+
+
+
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

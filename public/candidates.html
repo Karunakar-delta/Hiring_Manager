@@ -251,6 +251,7 @@
 #candidateTable {
     width: 100%; /* Ensure the table takes full width */
     border-collapse: collapse; /* Collapse borders */
+    height:fit-content;
 }
 
 #candidateTable thead {
@@ -305,6 +306,10 @@ th.sticky-col-3 {
   background-color: #f2f2f2; /* Change this to the desired background color */
 }
 
+.logoutLink {
+  display: none
+}
+
     </style>
   </head>
   <body>
@@ -326,7 +331,7 @@ th.sticky-col-3 {
       <a href="assignapplicants.html" id="assignApplicantLink"
         >Assign Applicant</a
       >
-      <a href="#" id="logoutLink" style="display: none">Logout</a>
+      <a href="#" id="logoutLink">Logout</a>
     </div>
     <div class="forms-container">
       <div id="usernameDisplay"></div>
@@ -361,7 +366,7 @@ th.sticky-col-3 {
         </div>
 
         <div class="filter-item">
-          <label for="positionTitleFilterLabel">Filter by Positions:</label>
+          <label for="positionTitleFilter">Filter by Positions:</label>
           <select id="positionTitleFilter">
             <option value="all">All Positions</option>
           </select>
@@ -416,9 +421,9 @@ th.sticky-col-3 {
           </table>
         </div>
       </div>
-      <div class="floating-scrollbar">
+      <!-- <div class="floating-scrollbar">
         <div class="scrollbar-spacer"></div>
-      </div>
+      </div> -->
     </div>
 
     <div id="updateCandidateModal" class="modal">
@@ -559,6 +564,7 @@ th.sticky-col-3 {
                 <option value="HOLD">HOLD</option>
                 <option value="Buffer List">Buffer List</option>
                 <option value="Rejected">Rejected</option>
+                <option value="About To Join">About To Join</option>
                 <option value="Declined">Declined</option>
               </select>
             </div>

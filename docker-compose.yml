@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  mysql_db:
+    image: mysql:5.7
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: ApplicantTracking
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypass
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+    command: ["--wait_timeout=60", "--interactive_timeout=60", "--net_read_timeout=1200", "--net_write_timeout=1200", "--default-authentication-plugin=mysql_native_password"]
+    healthcheck:
+      # Enhanced health check: connects to the specific database and runs a simple query
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "myuser", "-pmypass", "-D", "ApplicantTracking", "-e", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10 # Increased retries to give more time for database initialization
+
+  app:
+    build: .
+    ports:
+      - "3001:3002"
+    env_file:
+      - .env
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  dbdata:

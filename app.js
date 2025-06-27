@@ -12,7 +12,7 @@ const authenticateToken = require("./middleware/auth");
 const db = require("./db");
 const cors = require("cors");
 const app = express();
-const port = 3001;
+const port = 3002;
 app.use(cors());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -33,7 +33,7 @@ const util = require("util");
 
 app.get("/users", async (req, res) => {
   try {
-    const sql = 'SELECT userId, username, role FROM users WHERE role = "user"';
+    const sql = "SELECT userId, username, role FROM users WHERE role = 'user'";
 
     let params = [];
 
@@ -90,7 +90,7 @@ async function sendEmailToAdmin(to, subject, text) {
   }
 }
 async function getAdminUsers() {
-  const sql = 'SELECT username FROM users WHERE role = "admin"';
+  const sql = "SELECT username FROM users WHERE role = 'admin'";
 
   return new Promise((resolve, reject) => {
     db.query(sql, (err, results) => {
@@ -560,6 +560,150 @@ app.post("/updatePosition", authenticateToken, (req, res) => {
     }
   });
 });
+
+app.delete("/deletePosition", authenticateToken, (req, res) => {
+  const { positionId } = req.body;
+
+  if (!positionId) {
+    return res.status(400).json({ message: "Position ID is required" });
+  }
+
+  const checkSql = "SELECT * FROM OpenPositions WHERE positionId = ?";
+  db.query(checkSql, [positionId], (err, results) => {
+    if (err) {
+      console.error("Error checking position: " + err.message);
+      return res.status(500).json({ message: "Error checking position" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Position not found" });
+    }
+
+    const deleteSql = "DELETE FROM OpenPositions WHERE positionId = ?";
+    db.query(deleteSql, [positionId], (err, result) => {
+      if (err) {
+        console.error("Error deleting position: " + err.message);
+        return res.status(500).json({ message: "Error deleting position" });
+      }
+
+      res.status(200).json({ message: "Position deleted successfully" });
+    });
+  });
+});
+
+app.delete("/candidates/:id", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM ApplicantTracking WHERE applicantId = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ message: "Error deleting record." });
+    res.json({ message: "Candidate deleted successfully." });
+  });
+});
+
+
+app.post("/importCandidates", authenticateToken, (req, res) => {
+  const { candidates } = req.body;
+  if (!Array.isArray(candidates) || candidates.length === 0) {
+    return res.status(400).json({ message: "No candidate data provided." });
+  }
+
+  const phones = candidates.map(c => c.applicantPhone);
+  const emails = candidates.map(c => c.applicantEmail);
+
+  const checkSql = `
+    SELECT applicantPhone, applicantEmail FROM ApplicantTracking
+    WHERE applicantPhone IN (?) OR applicantEmail IN (?)
+  `;
+
+  db.query(checkSql, [phones, emails], (err, results) => {
+    if (err) {
+      console.error("Error checking duplicates:", err.message);
+      return res.status(500).json({ message: "Error checking for duplicates" });
+    }
+
+    const phoneSet = new Set(results.map(r => r.applicantPhone));
+    const emailSet = new Set(results.map(r => r.applicantEmail));
+
+    const rows = [];
+    let skipped = 0;
+
+    const formatDate = d => d ? new Date(d).toISOString().split('T')[0] : null;
+
+    for (const c of candidates) {
+      if (!c.applicantName || !c.applicantEmail || !c.applicantPhone) {
+        skipped++;
+        continue;
+      }
+
+      if (phoneSet.has(c.applicantPhone) || emailSet.has(c.applicantEmail)) {
+        skipped++;
+        continue;
+      }
+
+      rows.push([
+        c.profileOwner || "",
+        c.applicantName,
+        c.applicantPhone,
+        c.applicantEmail,
+        c.currentCompany || "",
+        c.candidateWorkLocation || "",
+        c.nativeLocation || "",
+        c.qualification || "",
+        c.experience || "",
+        c.skills || "",
+        c.noticePeriod || "",
+        c.currentctc || "",
+        c.expectedctc || "",
+        c.band || "",
+        formatDate(c.dateApplied),
+        c.positionTitle || "",
+        c.positionId,
+        c.status || "",
+        c.stage || "",
+        c.interviewer || "",
+        formatDate(c.dateOfPhoneScreen),
+        formatDate(c.interviewDate),
+        formatDate(c.dateOfOffer),
+        c.reasonNotExtending || '',
+        c.notes || "",
+      ]);
+    }
+
+    if (rows.length === 0) {
+      return res.status(200).json({
+        message: `All candidates skipped. No new candidates imported.`,
+        imported: 0,
+        skipped,
+      });
+    }
+
+    const insertSql = `
+      INSERT INTO ApplicantTracking (
+        profileOwner, applicantName, applicantPhone, applicantEmail,
+        currentCompany, candidateWorkLocation, nativeLocation,
+        qualification, experience, skills, noticePeriod,
+        currentctc, expectedctc, band, dateApplied,
+        positionTitle, positionId, status, stage,
+        interviewer, interviewDate, dateOfOffer,dateOfPhoneScreen,
+        reasonNotExtending, notes
+      ) VALUES ?
+    `;
+
+    db.query(insertSql, [rows], (err, result) => {
+      if (err) {
+        console.error("DB insert error:", err.message);
+        return res.status(500).json({ message: "Error inserting candidate data." });
+      }
+
+      return res.status(200).json({
+        message: `Import complete. ${rows.length} candidates imported, ${skipped} skipped.`,
+        imported: rows.length,
+        skipped,
+      });
+    });
+  });
+});
+
+
 
 // Function to trim the position title
 function trimPositionTitle(title) {
