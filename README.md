@@ -55,7 +55,7 @@ __Step 1:__  Download the Project Files:
  **Download the project:** 
   Copy and paste the following command into your Terminal/Command Prompt and press Enter:
 
-    git clone https://github.com/Karunakar-delta/Hiring_Manager.git
+    git clone -b Hiring_Manager_Docker --single-branch https://github.com/Karunakar-delta/Hiring_Manager.git
 
   **Enter the project folder:**
 
